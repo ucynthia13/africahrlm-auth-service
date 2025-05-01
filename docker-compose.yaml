@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres-auth
+    environment:
+      POSTGRES_DB: africahr-auth
+      POSTGRES_USER: cynthia
+      POSTGRES_PASSWORD: mySecretP@ssword
+    ports:
+      - "5433:5432"
+    networks:
+      - africahrlm-auth-network
+    volumes:
+      - auth_pgdata:/var/lib/postgresql/data
+
+  africahrlm-auth-service:
+    image: cynthiaaa877/africahrlm-auth-service:latest
+    container_name: africahrlm-auth-service
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/africahr-auth
+      SPRING_DATASOURCE_USERNAME: cynthia
+      SPRING_DATASOURCE_PASSWORD: mySecretP@ssword
+    ports:
+      - "9090:9090"
+    networks:
+      - africahrlm-auth-network
+
+
+networks:
+  africahrlm-auth-network:
+    driver: bridge
+
+volumes:
+  auth_pgdata:
+

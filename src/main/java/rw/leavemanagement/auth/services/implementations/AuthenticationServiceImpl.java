@@ -8,9 +8,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 import rw.leavemanagement.auth.dto.authentication.*;
 import rw.leavemanagement.auth.dto.response.ApiResponse;
 import rw.leavemanagement.auth.entity.User;
+import rw.leavemanagement.auth.enumerations.EUserRole;
 import rw.leavemanagement.auth.exceptions.CustomException;
 import rw.leavemanagement.auth.repository.IUserRepository;
 import rw.leavemanagement.auth.security.JwtTokenProvider;
@@ -21,6 +23,7 @@ import rw.leavemanagement.auth.utils.UserUtils;
 
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +49,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             newUser.setFirstname(signupDTO.getFirstName());
             newUser.setLastname(signupDTO.getLastName());
             newUser.setDepartment(signupDTO.getDepartment());
+            newUser.setRole(EUserRole.valueOf(signupDTO.getRole()));
             newUser.setPhoneNumber(signupDTO.getPhoneNumber());
 
             userRepository.save(newUser);
@@ -63,6 +67,24 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         } catch (Exception e) {
             throw new CustomException(e);
         }
+    }
+
+    @Override
+    public User findOrCreateGoogleUser(String email, String firstName, String lastName) {
+        return userRepository.findUserByEmail(email).orElseGet(() -> {
+            User newUser = new User();
+            newUser.setEmail(email);
+            newUser.setFirstname(firstName);
+            newUser.setLastname(lastName);
+
+            // Set safe defaults
+            newUser.setDepartment("Unknown");
+            newUser.setPhoneNumber("N/A");
+            newUser.setRole(EUserRole.USER);
+            newUser.setPassword(UUID.randomUUID().toString());
+
+            return userRepository.save(newUser);
+        });
     }
 
     @Override
@@ -124,6 +146,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return authentication;
     }
 
+    @Override
+    public ResponseEntity<ApiResponse<SignupDTO>> getCurrentUser(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ApiResponse.error("Unauthorized", HttpStatus.UNAUTHORIZED, null);
+        }
+
+        User user = (User) authentication.getPrincipal(); // Assumes you're using UserDetails
+        SignupDTO signupDTO = new SignupDTO(user); // Create a lightweight DTO to avoid exposing password, etc.
+
+        return ApiResponse.success("Current user fetched successfully", HttpStatus.OK, signupDTO);
+    }
     /**
      * Generates the JWT authentication response.
      *

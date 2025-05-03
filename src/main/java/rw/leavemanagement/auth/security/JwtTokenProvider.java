@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import rw.leavemanagement.auth.dto.authentication.JWTTokenCreation;
+import rw.leavemanagement.auth.entity.User;
 import rw.leavemanagement.auth.exceptions.CustomException;
 
 
@@ -100,5 +101,18 @@ public class JwtTokenProvider {
             logger.error("JWT claims string is empty" + ex);
         }
         return false;
+    }
+
+    public String generateToken(User user) {
+        return Jwts.builder()
+                .setSubject(user.getEmail())
+                .claim("id", user.getId())
+                .claim("email", user.getEmail())
+                .claim("role", user.getRole().name())
+                .claim("name", user.getFirstname() + " " + user.getLastname())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationInMs))
+                .signWith(SignatureAlgorithm.HS256, jwtSecret.getBytes())
+                .compact();
     }
 }

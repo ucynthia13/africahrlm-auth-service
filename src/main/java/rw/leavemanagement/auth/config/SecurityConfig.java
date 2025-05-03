@@ -44,7 +44,7 @@ public class SecurityConfig {
 
     private static final String[] AUTH_WHITELIST = {"/swagger-ui/**", "/swagger-ui.html","/api/v1/auth/signup", "/api/v1/auth/login"};
 
-    private static final String[] AUTH_USERLIST = {"/api/v1/profile/*", "/api/v1/auth/change-password", "/api/v1/reset-password"};
+    private static final String[] AUTH_USERLIST = {"/api/v1/profile/*", "/api/v1/auth/change-password", "/api/v1/reset-password", "/api/v1/users/*"};
 
     private static final String[] AUTH_ADMINSLIST = {"/api/v1/users/*"};
 
@@ -64,7 +64,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:8080"));
         configuration.setAllowedMethods(List.of("GET", "POST", "UPDATE", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

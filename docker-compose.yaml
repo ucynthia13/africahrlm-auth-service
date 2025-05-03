@@ -27,16 +27,6 @@ services:
     networks:
       - africahrlm-auth-network
 
-  africahr-frontend-service:
-    image: cynthiaaa877/aosmail-frontend
-    container_name: aosmail-frontend
-    ports:
-      - "3000:3000"
-    depends_on:
-      - aosmail
-    networks:
-      - aosmail-network
-
 networks:
   africahrlm-auth-network:
     driver: bridge

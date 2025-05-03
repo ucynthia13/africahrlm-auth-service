@@ -5,7 +5,7 @@ services:
     environment:
       POSTGRES_DB: africahr-auth
       POSTGRES_USER: cynthia
-      POSTGRES_PASSWORD: mySecretP@ssword
+      POSTGRES_PASSWORD: mySecretp@ssword
     ports:
       - "5433:5432"
     networks:
@@ -21,12 +21,21 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/africahr-auth
       SPRING_DATASOURCE_USERNAME: cynthia
-      SPRING_DATASOURCE_PASSWORD: mySecretP@ssword
+      SPRING_DATASOURCE_PASSWORD: mySecretp@ssword
     ports:
       - "9090:9090"
     networks:
       - africahrlm-auth-network
 
+  africahr-frontend-service:
+    image: cynthiaaa877/aosmail-frontend
+    container_name: aosmail-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - aosmail
+    networks:
+      - aosmail-network
 
 networks:
   africahrlm-auth-network:

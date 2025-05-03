@@ -6,10 +6,10 @@ import rw.leavemanagement.auth.entity.User;
 @Data
 public class AuthResponse {
     private String token;
-    private String email;
+    private User user;
 
     public AuthResponse(String accessToken, User user) {
         this.token = accessToken;
-        this.email = user.getEmail();
+        this.user = user;
     }
 }
